@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WitFargester - Sign Up / Login</title>
+    <style>
+        /* Base styles with cool 3D effects */
+        :root {
+            --primary-color: #6e48aa;
+            --secondary-color: #9d50bb;
+            --accent-color: #4776e6;
+            --text-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=2232&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+        
+        /* Blurred background overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: blur(10px) brightness(0.7);
+            z-index: -1;
+            transform: scale(1.1);
+        }
+        
+        /* 3D Card container */
+        .auth-container {
+            width: 350px;
+            background: rgba(30, 30, 40, 0.85);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -12px var(--shadow-color);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(0deg) rotateX(10deg);
+            transition: transform 0.5s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .auth-container:hover {
+            transform: perspective(1000px) rotateY(5deg) rotateX(10deg);
+        }
+        
+        /* Logo/title styling */
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--text-color);
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 10px var(--shadow-color);
+            letter-spacing: 2px;
+        }
+        
+        /* Form styling */
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 0 2px var(--accent-color);
+        }
+        
+        /* Button styling */
+        .auth-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px var(--shadow-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px var(--shadow-color);
+        }
+        
+        .auth-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* Toggle between login/signup */
+        .toggle-form {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-color);
+        }
+        
+        .toggle-form a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* 3D floating particles for background */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float 15s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background particles -->
+    <div class="particles" id="particles"></div>
+    
+    <!-- Auth container -->
+    <div class="auth-container">
+        <div class="logo">WitFargester</div>
+        
+        <!-- Sign Up Form (default shown) -->
+        <form id="signup-form" class="auth-form">
+            <div class="form-group">
+                <label for="signup-username">Username</label>
+                <input type="text" id="signup-username" required>
+            </div>
+            <div class="form-group">
+                <label for="signup-password">Password</label>
+                <input type="password" id="signup-password" required>
+            </div>
+            <button type="submit" class="auth-btn">Sign Up</button>
+        </form>
+        
+        <!-- Login Form (hidden by default) -->
+        <form id="login-form" class="auth-form" style="display: none;">
+            <div class="form-group">
+                <label for="login-username">Username</label>
+                <input type="text" id="login-username" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button type="submit" class="auth-btn">Log In</button>
+        </form>
+        
+        <div class="toggle-form">
+            <span id="toggle-text">Already have an account? </span>
+            <a id="toggle-link">Log In</a>
+        </div>
+    </div>
+
+    <script>
+        // Create background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 10 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = opacity;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Toggle between login and signup forms
+        function setupFormToggle() {
+            const signupForm = document.getElementById('signup-form');
+            const loginForm = document.getElementById('login-form');
+            const toggleLink = document.getElementById('toggle-link');
+            const toggleText = document.getElementById('toggle-text');
+            
+            let showingLogin = false;
+            
+            toggleLink.addEventListener('click', () => {
+                showingLogin = !showingLogin;
+                
+                if (showingLogin) {
+                    signupForm.style.display = 'none';
+                    loginForm.style.display = 'flex';
+                    toggleText.textContent = "Don't have an account? ";
+                    toggleLink.textContent = "Sign Up";
+                } else {
+                    loginForm.style.display = 'none';
+                    signupForm.style.display = 'flex';
+                    toggleText.textContent = "Already have an account? ";
+                    toggleLink.textContent = "Log In";
+                }
+            });
+        }
+        
+        // Handle form submissions
+        function setupFormHandlers() {
+            const signupForm = document.getElementById('signup-form');
+            const loginForm = document.getElementById('login-form');
+            
+            // Signup handler
+            signupForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('signup-username').value;
+                const password = document.getElementById('signup-password').value;
+                
+                try {
+                    // In a real app, you would send this to your backend
+                    const response = await mockSignup(username, password);
+                    
+                    if (response.success) {
+                        // Store user data and proceed to main app
+                        localStorage.setItem('wf_username', username);
+                        localStorage.setItem('wf_token', response.token);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert(response.message);
+                    }
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    alert('An error occurred during signup');
+                }
+            });
+            
+            // Login handler
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = document.getElementById('login-username').value;
+                const password = document.getElementById('login-password').value;
+                
+                try {
+                    // In a real app, you would send this to your backend
+                    const response = await mockLogin(username, password);
+                    
+                    if (response.success) {
+                        // Store user data and proceed to main app
+                        localStorage.setItem('wf_username', username);
+                        localStorage.setItem('wf_token', response.token);
+                        window.location.href = 'dashboard.html';
+                    } else {
+                        alert(response.message);
+                    }
+                } catch (error) {
+                    console.error('Login error:', error);
+                    alert('An error occurred during login');
+                }
+            });
+        }
+        
+        // Mock API functions (replace with real API calls in production)
+        async function mockSignup(username, password) {
+            // Check if username already exists in localStorage
+            const existingUsers = JSON.parse(localStorage.getItem('wf_users') || '{}');
+            
+            if (existingUsers[username]) {
+                return { success: false, message: 'Username already exists. Please choose another.' };
+            }
+            
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Create new user
+            existingUsers[username] = {
+                password: password, // In real app, hash this password
+                createdAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('wf_users', JSON.stringify(existingUsers));
+            
+            return {
+                success: true,
+                message: 'Signup successful!',
+                token: generateMockToken(username)
+            };
+        }
+        
+        async function mockLogin(username, password) {
+            // Check if user exists
+            const existingUsers = JSON.parse(localStorage.getItem('wf_users') || '{}');
+            
+            if (!existingUsers[username]) {
+                return { success: false, message: 'Username not found.' };
+            }
+            
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Check password (in real app, compare hashed passwords)
+            if (existingUsers[username].password !== password) {
+                return { success: false, message: 'Incorrect password.' };
+            }
+            
+            return {
+                success: true,
+                message: 'Login successful!',
+                token: generateMockToken(username)
+            };
+        }
+        
+        function generateMockToken(username) {
+            // In a real app, this would be a JWT or similar from your backend
+            return btoa(JSON.stringify({
+                username: username,
+                exp: Date.now() + (7 * 24 * 60 * 60 * 1000) // Expires in 7 days
+            }));
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            setupFormToggle();
+            setupFormHandlers();
+            
+            // Check if user is already logged in
+            if (localStorage.getItem('wf_token')) {
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
+</body>
+</html>
