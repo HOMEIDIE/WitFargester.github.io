@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WitFargester - Dashboard</title>
+    <style>
+        /* Base styles */
+        :root {
+            --primary-color: #6e48aa;
+            --secondary-color: #9d50bb;
+            --accent-color: #4776e6;
+            --text-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --dark-bg: #1a1a2e;
+            --darker-bg: #16213e;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('https://images.unsplash.com/photo-1639762681057-408e52192e55?q=80&w=2232&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            height: 100vh;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+        
+        /* Blurred background overlay */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: inherit;
+            filter: blur(10px) brightness(0.5);
+            z-index: -1;
+        }
+        
+        /* Dashboard layout */
+        .dashboard {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        /* Header styling */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: rgba(30, 30, 40, 0.8);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 2px 10px var(--shadow-color);
+            z-index: 10;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text-color);
+            text-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .username {
+            font-weight: 600;
+        }
+        
+        .logout-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-color);
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        /* Create server button */
+        .create-server-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 5;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .create-server-btn:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+            box-shadow: 0 15px 30px var(--shadow-color);
+        }
+        
+        .create-server-btn:active {
+            transform: translate(-50%, -50%) scale(0.98);
+        }
+        
+        /* Floating server cards background */
+        .server-cards {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            padding: 30px;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+        
+        .server-card {
+            width: 200px;
+            height: 250px;
+            background: rgba(30, 30, 40, 0.7);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(var(--rotate-y)) rotateX(var(--rotate-x));
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+            box-shadow: 0 10px 20px var(--shadow-color);
+            overflow: hidden;
+        }
+        
+        .server-card:hover {
+            opacity: 0.8;
+        }
+        
+        .server-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+        
+        .server-card:hover::before {
+            transform: translateX(100%);
+        }
+        
+        /* Animation for the cards */
+        @keyframes float {
+            0%, 100% {
+                transform: perspective(1000px) rotateY(0) rotateX(0) translateY(0);
+            }
+            50% {
+                transform: perspective(1000px) rotateY(5deg) rotateX(5deg) translateY(-20px);
+            }
+        }
+        
+        /* Particles background */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float 15s infinite linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">WitFargester</div>
+            <div class="user-info">
+                <span class="username" id="username-display"></span>
+                <button class="logout-btn" id="logout-btn">Log Out</button>
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <!-- Create server button -->
+            <button class="create-server-btn" id="create-server-btn">
+                Create New Server
+            </button>
+            
+            <!-- Background server cards -->
+            <div class="server-cards" id="server-cards"></div>
+            
+            <!-- Particles background -->
+            <div class="particles" id="particles"></div>
+        </div>
+    </div>
+
+    <script>
+        // Generate random server cards in background
+        function generateServerCards() {
+            const serverCardsContainer = document.getElementById('server-cards');
+            const cardCount = 12;
+            const serverNames = [
+                "Galactic Hub", "Quantum Nexus", "Cyber Realm", 
+                "Neon Oasis", "Digital Vortex", "Pixel Haven",
+                "Code Sanctum", "Binary Bastion", "Syntax Citadel",
+                "Algorithm Temple", "Data Forge", "Logic Spire"
+            ];
+            
+            for (let i = 0; i < cardCount; i++) {
+                const card = document.createElement('div');
+                card.classList.add('server-card');
+                
+                // Random properties for 3D effect
+                const rotateY = (Math.random() * 20) - 10;
+                const rotateX = (Math.random() * 10) - 5;
+                const delay = Math.random() * 5;
+                const duration = 10 + (Math.random() * 10);
+                
+                card.style.setProperty('--rotate-y', `${rotateY}deg`);
+                card.style.setProperty('--rotate-x', `${rotateX}deg`);
+                card.style.animationDelay = `${delay}s`;
+                card.style.animationDuration = `${duration}s`;
+                card.style.animationName = 'float';
+                
+                // Random server name
+                const name = serverNames[Math.floor(Math.random() * serverNames.length)];
+                card.setAttribute('data-name', name);
+                
+                serverCardsContainer.appendChild(card);
+            }
+        }
+        
+        // Create background particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                // Random properties
+                const size = Math.random() * 10 + 5;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const delay = Math.random() * 15;
+                const duration = Math.random() * 10 + 10;
+                const opacity = Math.random() * 0.5 + 0.1;
+                
+                // Apply styles
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animationDelay = `${delay}s`;
+                particle.style.animationDuration = `${duration}s`;
+                particle.style.opacity = opacity;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Handle server creation
+        function setupServerCreation() {
+            const createBtn = document.getElementById('create-server-btn').addEventListener('click', () => {
+    const username = localStorage.getItem('wf_username');
+    if (!username) {
+        alert('Session expired. Please log in again.');
+        window.location.href = 'index.html';
+        return;
+    }
+
+    // Generate server ID
+    const serverId = 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, () => {
+        return Math.floor(Math.random() * 16).toString(16);
+    });
+
+    // Create server data
+    const serverData = {
+        id: serverId,
+        name: `Server-${Math.floor(Math.random() * 1000)}`,
+        host: username,
+        created: new Date().toISOString(),
+        users: [username],
+        currentUrl: 'about:blank'
+    };
+
+    // Save to localStorage
+    const servers = JSON.parse(localStorage.getItem('wf_servers') || '{}');
+    servers[serverId] = serverData;
+    localStorage.setItem('wf_servers', JSON.stringify(servers));
+    
+    // Redirect with server ID in URL
+    window.location.href = `server.html?server=${serverId}`;
+});
+                    
+            try {
+                const createBtn = document.getElementById('create-server-btn').addEventListener('click', () => {
+                    const username = localStorage.getItem('wf_username');
+                    if (!username) {
+                        alert('Session expired. Please log in again.');
+                        window.location.href = 'index.html';
+                        return;
+                    }
+
+                    // Generate server ID
+                    const serverId = 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, () => {
+                        return Math.floor(Math.random() * 16).toString(16);
+                    });
+
+                    // Create server data
+                    const serverData = {
+                        id: serverId,
+                        name: `Server-${Math.floor(Math.random() * 1000)}`,
+                        host: username,
+                        created: new Date().toISOString(),
+                        users: [username],
+                        currentUrl: 'about:blank'
+                    };
+
+                    // Save to localStorage
+                    const servers = JSON.parse(localStorage.getItem('wf_servers') || '{}');
+                    servers[serverId] = serverData;
+                    localStorage.setItem('wf_servers', JSON.stringify(servers));
+                    
+                    // Redirect with server ID in URL
+                    window.location.href = `server.html?server=${serverId}`;
+                });
+            } catch (error) {
+                console.error('Server creation error:', error);
+                alert('Failed to create server. Please try again.');
+            }
+        }
+        
+        // Generate unique server ID
+        function generateServerId() {
+            return 'xxxx-xxxx-xxxx-xxxx'.replace(/[x]/g, () => {
+                return Math.floor(Math.random() * 16).toString(16);
+            });
+        }
+        
+        // Handle logout
+        function setupLogout() {
+            const logoutBtn = document.getElementById('logout-btn');
+            
+            logoutBtn.addEventListener('click', () => {
+                localStorage.removeItem('wf_token');
+                localStorage.removeItem('wf_username');
+                window.location.href = 'index.html';
+            });
+        }
+        
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user is logged in
+            const username = localStorage.getItem('wf_username');
+            const token = localStorage.getItem('wf_token');
+            
+            if (!username || !token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Display username
+            document.getElementById('username-display').textContent = username;
+            
+            // Setup page elements
+            createParticles();
+            generateServerCards();
+            setupServerCreation();
+            setupLogout();
+        });
+    </script>
+</body>
+</html>
